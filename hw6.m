@@ -1,0 +1,28 @@
+clc;
+clear ;
+close all;
+R = 6371;
+k = 1.2;
+r = 0.5;
+m = 800;
+f = 10000;
+g = 9.8;
+X0 = [0 , 0];
+A = [0 1; g*(R/(R+X0(1)))+(k/m)*(X0(2))^2*exp(-X0(1)/r) -2*(k/m)*(X0(2))*exp(-X0(1)/r)];
+B = [1;0];
+C = [1 0];
+D = 0;
+syms 's';
+phi  = ilaplace(C * (s * eye(2) - A) * B);
+O = ctrb(A,B);
+rank(O);
+eig(A);
+sys = ss2tf(A,B,C,D);
+pd = [-3-3i -3+3i];
+k = place(A,B,pd);
+Q = diag([2,5]);
+R = 1;
+k = lqr(A,B,Q,R);
+Acl = A-B*k;
+new_sys = ss(Acl,B,C,D);
+step(new_sys)
